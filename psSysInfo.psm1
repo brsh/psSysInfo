@@ -794,8 +794,10 @@ Function Get-NetInfo {
         System.String 
  
     #> 
+    
     #Create/output network info object
     #Borrowed and modded from ps script library
+
     Param (
         [string] $hostname="localhost"     
     )
@@ -901,12 +903,6 @@ function Get-LoggedOnUsers {
                 }
 }
 
-
-
-
-
-
-Export-ModuleMember -function Get-* -Alias *
 
 
 ###################################################
