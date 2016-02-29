@@ -21,7 +21,7 @@ Get-ChildItem $ScriptPath/private -Recurse -Filter "*.ps1" -File | Foreach {
 function Get-OSInfo {
     <# 
     .SYNOPSIS 
-        This is a function to pull OS info via WMI. 
+        Pull OS info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -142,7 +142,7 @@ new-alias -name gosi -value Get-OSInfo -Description "Get info on the OS version"
 function Get-LastBootTime { 
     <# 
     .SYNOPSIS 
-        Pulls the date when the local machine was last brought online. 
+        When the local machine was last brought online
  
     .DESCRIPTION 
         This function pulls the date when the local machine was last brought online. It really only runs the Get-OSInfo function and returns the lastboot param.
@@ -159,7 +159,7 @@ function Get-LastBootTime {
 function Get-LastBootTimes([int] $count = 6) {
     <# 
     .SYNOPSIS 
-        Pulls the dates when the local machine was last brought on-/off-line. 
+        List the recent on-/off-line times
  
     .DESCRIPTION 
         This function pulls the dates of the last few boots (both ups and downs). It queries the event log for startups, shutdowns, and reboots. The count can be set for how many boots to list (default is 6).
@@ -196,7 +196,7 @@ New-Alias -name glbts -Value Get-LastBootTimes -Description "Get the last x boot
 function Get-SysInfo {
     <# 
     .SYNOPSIS 
-        This is a function to pull system info via WMI. 
+        Pull system info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -281,7 +281,7 @@ New-Alias -name gsysi -Value Get-SysInfo -Description "Get system information" -
 function Get-ProcessorInfo {
     <# 
     .SYNOPSIS 
-        This is a function to pull processor info via WMI. 
+        Pull processor info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -370,7 +370,7 @@ New-Alias -name gproc -Value Get-ProcessorInfo -Description "Get processor infor
 function Get-Battery {
     <# 
     .SYNOPSIS 
-        This is a function to pull battery info via WMI. 
+        Pull battery info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -459,7 +459,7 @@ New-Alias -name gbatt -Value Get-Battery -Description "Get battery information" 
 function Get-Volume {
     <# 
     .SYNOPSIS 
-        This is a function to pull volume info via WMI. 
+        Pull volume info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -557,7 +557,7 @@ New-Alias -name gvol -Value Get-Volume -Description "Get volume information" -fo
 function Get-VolumePretty {
     <# 
     .SYNOPSIS 
-        This is a function to pull volume info via WMI, but prettified. 
+        Pull volume info via WMI, but prettified
  
     .DESCRIPTION 
         This function uses the Get-Volume function to prettify the following information from WMI: 
@@ -602,7 +602,7 @@ New-Alias -name vol -Value Get-VolumePretty -Description "Get pretty volume info
 function Get-DomainControllers {
     <# 
     .SYNOPSIS 
-        This is a function to pull a list of domain controllers. 
+        List domain controllers
  
     .DESCRIPTION
         This function uses polls the domain for the following info on AD Domain Controllers: 
@@ -651,6 +651,20 @@ function Get-DomainControllers {
 New-Alias -name gDC -Value Get-DomainControllers -Description "List domain controllers" -force
 
 function Get-FunctionalLevels {
+<#    
+.SYNOPSIS    
+    List forest and domain functional levels
+      
+.DESCRIPTION    
+    Queries AD to get the the forest and domain functional levels
+      
+.EXAMPLE  
+    Get-FunctionalLevels
+      
+    Windows2008R2Domain
+    Windows2003Forest
+            
+#>  
     [system.directoryservices.activedirectory.domain]::GetCurrentDomain().DomainMode
     [system.directoryservices.activedirectory.forest]::GetCurrentForest().ForestMode
 }
@@ -660,7 +674,7 @@ New-Alias -name gFunc -Value Get-FunctionalLevels -Description "List forrest and
 Function Get-FSMORoleOwner {  
 <#    
 .SYNOPSIS    
-    Retrieves the list of FSMO role owners of a forest and domain    
+    List FSMO role owners    
       
 .DESCRIPTION    
     Retrieves the list of FSMO role owners of a forest and domain  
@@ -716,7 +730,7 @@ New-Alias -name fsmo -Value Get-FSMORoleOwner -Description "List the FSMO roles"
 Function Get-TimeZone {
     <# 
     .SYNOPSIS 
-        This is a function justs lists the Time Zone. 
+        List the Time Zone
  
     .DESCRIPTION
         Have you ever wondered if you're in Standard or Daylight time? This function will tell you. 
@@ -747,7 +761,7 @@ New-Alias -name tz -Value Get-TimeZone -Description "What's the current TimeZone
 Function Get-NetInfo {
     <# 
     .SYNOPSIS 
-        This is a function to pull network info via WMI. 
+        Pull network info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -866,7 +880,20 @@ Function Get-NetInfo {
 
 New-Alias -name gnic -value Get-Netinfo -Description "Display Network info - try (gip)[0].IPAddress[0]" -Force
 
-function Get-LoginInfo {
+function Get-LogonInfo {
+    <# 
+    .SYNOPSIS 
+        Current User, Domain, and LogonServer
+ 
+    .DESCRIPTION
+        Pulls basic logon information about the current user - including the domain controller responsible for authentication. 
+             
+    .EXAMPLE 
+        PS C:\> Get-LogonUser 
+         
+    .INPUTS 
+        None
+    #> 
     $InfoHash = @{
         UserName = $env:USERNAME
         UserDomain = $env:USERDOMAIN
@@ -889,6 +916,22 @@ function Get-LoginInfo {
 }
 
 function Get-LoggedOnUsers {
+    <# 
+    .SYNOPSIS 
+        All logged on users
+ 
+    .DESCRIPTION
+        Pulls basic logon information about the current user - including the domain controller responsible for authentication. 
+             
+    .PARAMETER hostname
+        The name of the host to query
+
+    .EXAMPLE 
+        PS C:\> Get-LoggedOnUsers
+         
+    .INPUTS 
+        String
+    #> 
     Param (
         [string] $hostname="localhost"     
     )
