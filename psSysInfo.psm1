@@ -156,6 +156,32 @@ function Get-LastBootTime {
     (Get-OSInfo).LastBoot
 }
 
+function Get-Uptime {
+<#
+    .SYNOPSIS
+    Timespan that the computer has been running
+    .DESCRIPTION
+    This returns a timespan for how long the specified computer has been up and running. As a timespan, serveral formatting options are available (like (get-uptime).TotalDays and (get-uptime) -f {0})
+    .PARAMETER HostName
+    Defaults to current
+    .EXAMPLE
+    PS C:\> Get-Uptime
+    .EXAMPLE
+    PS C:\> (Get-Uptime).TotalDays
+    .EXAMPLE
+    PS C:\> (Get-Uptime).ToString()
+    .OUTPUTS
+    TimeSpan
+#>
+    param ( 
+        [Parameter(Position=0)]
+        [string] $hostname="localhost"   
+    )
+    New-TimeSpan -start (Get-LastBootTime $hostname) -end $(get-date)
+}
+
+New-Alias -name uptime -Value Get-Uptime -Description "How long the computer has been running" -force
+
 function Get-LastBootTimes([int] $count = 6) {
     <# 
     .SYNOPSIS 
@@ -266,7 +292,7 @@ function Get-SysInfo {
         $InfoStack.PSTypeNames.Insert(0,"Sys.Information")
 
         #Sets the "default properties" when outputting the variable... but really for setting the order
-        $defaultProperties = @('Computername', 'CurrentUser', 'OwnerName', 'DNSName', 'Domain', 'DomainRole', 'Manufacturer', 'Model', 'IsVirtual', 'BootStatus', 'SystemType', 'ProcessorsLogical', 'ProcessorsPhysical')
+        $defaultProperties = @('Computername', 'CurrentUser', 'OwnerName', 'DNSName', 'Domain', 'DomainRole', 'Manufacturer', 'Model', 'IsVirtual', 'BootStatus', 'SystemType', 'ProcessorsPhysical', 'ProcessorsLogical')
         $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultProperties)
         $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
         $InfoStack | Add-Member MemberSet PSStandardMembers $PSStandardMembers
@@ -531,6 +557,8 @@ function Get-Volume {
             Format = $_.FileSystem
             FreeGB = $freegb
             TotalGB = $totalgb
+            FreePercent = [math]::Round( (($FreeGB / $TotalGB) * 100), 2)
+            UsedPercent = [math]::Round( ((($TotalGB - $FreeGB) / $TotalGB) * 100), 2)
             Compressed = $_.Compressed
             PageFile = $pagefile
             BootDrive = $bootdrive
@@ -543,7 +571,7 @@ function Get-Volume {
         $InfoStack.PSTypeNames.Insert(0,"Volume.Information")
 
         #Sets the "default properties" when outputting the variable... but really for setting the order
-        $defaultProperties = @('Drive', 'Label', 'Type', 'Format', 'PageFile', 'FreeGB', 'TotalGB')
+        $defaultProperties = @('Drive', 'Label', 'Type', 'Format', 'PageFile', 'FreeGB', 'TotalGB', 'FreePercent', 'UsedPercent')
         $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultProperties)
         $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
         $InfoStack | Add-Member MemberSet PSStandardMembers $PSStandardMembers
@@ -591,10 +619,13 @@ function Get-VolumePretty {
     $retval = Get-Volume $hostname
    
     $retval | where-object  { $_.Type  } | `
-        format-table -autosize Drive, Label, Format, `
-            @{Label="FreeGB"; Alignment="right"; Expression={$_.FreeGB}}, `
-            @{Label="TotalGB"; Alignment="right"; Expression={$_.TotalGB}}, Compressed `
-            | out-default
+        format-table -autosize Drive, Label, Format, 
+            @{Label="    Total GB"; Alignment="right"; Expression={$_.TotalGB}},
+            @{Label="     Free GB"; Alignment="right"; Expression={$_.FreeGB}}, 
+            @{Label="Free %"; Alignment="right"; Expression={[math]::Round($_.FreePercent,0)}},
+            @{Label="Used %"; Alignment="right"; Expression={[math]::Round($_.UsedPercent,0)}},
+            Compressed |
+            out-default
 }
 
 New-Alias -name vol -Value Get-VolumePretty -Description "Get pretty volume information" -force
