@@ -21,8 +21,8 @@ Get-ChildItem $ScriptPath/private -Recurse -Filter "*.ps1" -File | Foreach {
 function Get-OSInfo {
     <# 
     .SYNOPSIS 
-        Pull OS info via WMI
- 
+        OS info via WMI
+         
     .DESCRIPTION 
         This function pulls the following information from WMI: 
             Computername
@@ -142,7 +142,7 @@ new-alias -name gosi -value Get-OSInfo -Description "Get info on the OS version"
 function Get-LastBootTime { 
     <# 
     .SYNOPSIS 
-        When the local machine was last brought online
+        Local machine last brought online
  
     .DESCRIPTION 
         This function pulls the date when the local machine was last brought online. It really only runs the Get-OSInfo function and returns the lastboot param.
@@ -185,7 +185,7 @@ New-Alias -name uptime -Value Get-Uptime -Description "How long the computer has
 function Get-LastBootTimes([int] $count = 6) {
     <# 
     .SYNOPSIS 
-        List the recent on-/off-line times
+       Recent on-/off-line times
  
     .DESCRIPTION 
         This function pulls the dates of the last few boots (both ups and downs). It queries the event log for startups, shutdowns, and reboots. The count can be set for how many boots to list (default is 6).
@@ -222,7 +222,7 @@ New-Alias -name glbts -Value Get-LastBootTimes -Description "Get the last x boot
 function Get-SysInfo {
     <# 
     .SYNOPSIS 
-        Pull system info via WMI
+        System info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -307,7 +307,7 @@ New-Alias -name gsysi -Value Get-SysInfo -Description "Get system information" -
 function Get-ProcessorInfo {
     <# 
     .SYNOPSIS 
-        Pull processor info via WMI
+        Processor info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -396,7 +396,7 @@ New-Alias -name gproc -Value Get-ProcessorInfo -Description "Get processor infor
 function Get-Battery {
     <# 
     .SYNOPSIS 
-        Pull battery info via WMI
+        Battery info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -485,7 +485,7 @@ New-Alias -name gbatt -Value Get-Battery -Description "Get battery information" 
 function Get-Volume {
     <# 
     .SYNOPSIS 
-        Pull volume info via WMI
+        Disk volume info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
@@ -585,7 +585,7 @@ New-Alias -name gvol -Value Get-Volume -Description "Get volume information" -fo
 function Get-VolumePretty {
     <# 
     .SYNOPSIS 
-        Pull volume info via WMI, but prettified
+        Disk volume info via WMI, but prettified
  
     .DESCRIPTION 
         This function uses the Get-Volume function to prettify the following information from WMI: 
@@ -684,7 +684,7 @@ New-Alias -name gDC -Value Get-DomainControllers -Description "List domain contr
 function Get-FunctionalLevels {
 <#    
 .SYNOPSIS    
-    List forest and domain functional levels
+    Forest and domain functional levels
       
 .DESCRIPTION    
     Queries AD to get the the forest and domain functional levels
@@ -705,7 +705,7 @@ New-Alias -name gFunc -Value Get-FunctionalLevels -Description "List forrest and
 Function Get-FSMORoleOwner {  
 <#    
 .SYNOPSIS    
-    List FSMO role owners    
+    FSMO role owners    
       
 .DESCRIPTION    
     Retrieves the list of FSMO role owners of a forest and domain  
@@ -761,7 +761,7 @@ New-Alias -name fsmo -Value Get-FSMORoleOwner -Description "List the FSMO roles"
 Function Get-TimeZone {
     <# 
     .SYNOPSIS 
-        List the Time Zone
+        Time Zone info
  
     .DESCRIPTION
         Have you ever wondered if you're in Standard or Daylight time? This function will tell you. 
@@ -779,7 +779,7 @@ Function Get-TimeZone {
     $SDate = TZ-Change $TimeZone.StandardDay $TimeZone.StandardDayOfWeek $TimeZone.StandardMonth $TimeZone.StandardHour
     
     $Today = Get-Date
-    if (($Today -gt $DDate) -and ($Today -lt $DDate)) {
+    if (($Today -gt $DDate) -and ($Today -lt $SDate)) {
         $TimeZone.DayLightName
     }
     else {
@@ -792,7 +792,7 @@ New-Alias -name tz -Value Get-TimeZone -Description "What's the current TimeZone
 Function Get-NetInfo {
     <# 
     .SYNOPSIS 
-        Pull network info via WMI
+        Network info via WMI
  
     .DESCRIPTION 
         This function pulls the following information from WMI: 
