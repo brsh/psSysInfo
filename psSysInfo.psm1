@@ -977,6 +977,9 @@ function Get-LoggedOnUsers {
                 }
 }
 
+Export-ModuleMember -function Get-*
+Export-ModuleMember -alias *
+
 
 
 ###################################################
