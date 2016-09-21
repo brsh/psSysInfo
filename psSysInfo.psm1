@@ -517,10 +517,17 @@ function Get-Volume {
  
     #> 
     Param (
-        [string] $hostname="localhost"     
+        [string] $hostname="localhost",
+        [string] $type = "All"
     )
 
-    Get-WmiObject -Class Win32_LogicalDisk -ComputerName $hostname -Filter "DriveType='2' or DriveType='3' or DriveType='4'" | ForEach-Object {
+    Switch -Wildcard ($type) {
+        "R*" { $WMIFilter = "DriveType='2'"; break }
+        "L*" { $WMIFilter = "DriveType='3'"; "Hello"; break }
+        "N*" { $WMIFilter = "DriveType='4'"; break }
+        Default { $WMIFilter = "DriveType='2' or DriveType='3' or DriveType='4'"; break }
+    }
+    Get-WmiObject -Class Win32_LogicalDisk -ComputerName $hostname -Filter "$WMIFilter" | ForEach-Object {
 
         $pagefile = $false
         $bootdrive = $false
@@ -613,10 +620,11 @@ function Get-VolumePretty {
  
     #> 
     Param (
-        [string] $hostname="localhost"
+        [string] $hostname="localhost",
+        [string] $type = "Local"
     )
     #Quick Local Disk check
-    $retval = Get-Volume $hostname
+    $retval = Get-Volume -hostname $hostname -type $type
    
     $retval | where-object  { $_.Type  } | `
         format-table -autosize Drive, Label, Format, 
