@@ -766,36 +766,58 @@ Catch {
 
 New-Alias -name fsmo -Value Get-FSMORoleOwner -Description "List the FSMO roles" -force
 
-Function Get-TimeZone {
+Function Get-DaylightSavingsTime {
     <# 
     .SYNOPSIS 
-        Time Zone info
+        DST info
  
     .DESCRIPTION
-        Have you ever wondered if you're in Standard or Daylight time? This function will tell you. 
+        Have you ever wondered if you're in Standard or Daylight time? This function will tell you. It also tells you the start and stop dates.
              
     .EXAMPLE 
-        PS C:\> Get-TimeZone 
+        PS C:\> Get-DaylightSavingsTime 
          
     .INPUTS 
         None
  
     #> 
     $TimeZone = Get-WmiObject -Class Win32_TimeZone
+    [string] $Whatis = ""
+    [bool] $DSTActive = $false
      
-    $DDate = TZ-Change $TimeZone.DaylightDay $TimeZone.DaylightDayOfWeek $TimeZone.DaylightMonth $TimeZone.DaylightHour
-    $SDate = TZ-Change $TimeZone.StandardDay $TimeZone.StandardDayOfWeek $TimeZone.StandardMonth $TimeZone.StandardHour
+    [datetime] $DDate = TZ-Change $TimeZone.DaylightDay $TimeZone.DaylightDayOfWeek $TimeZone.DaylightMonth $TimeZone.DaylightHour
+    [datetime] $SDate = TZ-Change $TimeZone.StandardDay $TimeZone.StandardDayOfWeek $TimeZone.StandardMonth $TimeZone.StandardHour
     
     $Today = Get-Date
     if (($Today -gt $DDate) -and ($Today -lt $SDate)) {
-        $TimeZone.DayLightName
+        $WhatIs = $TimeZone.DayLightName
+        $DSTActive = $true
     }
     else {
-        $TimeZone.StandardName
+        $WhatIs = $TimeZone.StandardName
+        $DSTActive = $false
     }
+
+    $InfoHash =  @{
+        TimeZone = $WhatIs
+        Active = $DSTActive
+        Start = $DDate
+        End = $SDate
+    }
+
+    $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
+    #Add a (hopefully) unique object type name
+    $InfoStack.PSTypeNames.Insert(0,"NIC.Information")
+
+    #Sets the "default properties" when outputting the variable... but really for setting the order
+    $defaultProperties = @('Timezone', 'DSTActive')
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultProperties)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    $InfoStack | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+    $InfoStack
 }
 
-New-Alias -name tz -Value Get-TimeZone -Description "What's the current TimeZone?" -force
+New-Alias -name dst -Value Get-DaylightSavingsTime -Description "What's the current TimeZone?" -force
 
 Function Get-NetInfo {
     <# 
