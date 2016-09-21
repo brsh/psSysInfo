@@ -14,6 +14,7 @@ A PowerShell system info module, which includes the following:
 * Get-OSInfo
 * Get-ProcessorInfo
 * Get-SysInfo
+* Get-TimeZone
 * Get-Volume
 * Get-VolumePretty
 
