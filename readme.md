@@ -1,4 +1,4 @@
-psPrompt
+psSysInfo
 
 A PowerShell system info module, which includes the following:
 
