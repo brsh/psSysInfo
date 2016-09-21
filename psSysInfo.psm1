@@ -766,37 +766,6 @@ Catch {
 
 New-Alias -name fsmo -Value Get-FSMORoleOwner -Description "List the FSMO roles" -force
 
-Function Get-TimeZone {
-    <# 
-    .SYNOPSIS 
-        Time Zone info
- 
-    .DESCRIPTION
-        Have you ever wondered if you're in Standard or Daylight time? This function will tell you. 
-             
-    .EXAMPLE 
-        PS C:\> Get-TimeZone 
-         
-    .INPUTS 
-        None
- 
-    #> 
-    $TimeZone = Get-WmiObject -Class Win32_TimeZone
-     
-    $DDate = TZ-Change $TimeZone.DaylightDay $TimeZone.DaylightDayOfWeek $TimeZone.DaylightMonth $TimeZone.DaylightHour
-    $SDate = TZ-Change $TimeZone.StandardDay $TimeZone.StandardDayOfWeek $TimeZone.StandardMonth $TimeZone.StandardHour
-    
-    $Today = Get-Date
-    if (($Today -gt $DDate) -and ($Today -lt $SDate)) {
-        $TimeZone.DayLightName
-    }
-    else {
-        $TimeZone.StandardName
-    }
-}
-
-New-Alias -name tz -Value Get-TimeZone -Description "What's the current TimeZone?" -force
-
 Function Get-NetInfo {
     <# 
     .SYNOPSIS 
