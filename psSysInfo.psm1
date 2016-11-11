@@ -120,7 +120,7 @@ function Get-OSInfo {
                 Version = $_.Version
                 Edition = $a.Trim()
             }
-            $InfoStack += New-Object -TypeName PSObject -Property $InfoHash
+            $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
 
             #Add a (hopefully) unique object type name
             $InfoStack.PSTypeNames.Insert(0,"OS.Information")
@@ -286,7 +286,7 @@ function Get-SysInfo {
                 SystemType = $_.SystemType
                 CurrentUser = $_.UserName
             }
-            $InfoStack += New-Object -TypeName PSObject -Property $InfoHash
+            $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
 
         #Add a (hopefully) unique object type name
         $InfoStack.PSTypeNames.Insert(0,"Sys.Information")
@@ -377,7 +377,7 @@ function Get-ProcessorInfo {
                 HyperThreaded = ($_.NumberOfCores -lt $_.NumberOfLogicalProcessors)
                 VTEnabled = $_.VirtualizationFirmwareEnabled
             }
-            $InfoStack += New-Object -TypeName PSObject -Property $InfoHash
+            $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
             #Add a (hopefully) unique object type name
             $InfoStack.PSTypeNames.Insert(0,"CPU.Information")
 
@@ -464,7 +464,7 @@ function Get-Battery {
                 RunTimeSpan = $ts
                 Health = $_.Status
             }
-            $InfoStack += New-Object -TypeName PSObject -Property $InfoHash
+            $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
             
             #Add a (hopefully) unique object type name
             $InfoStack.PSTypeNames.Insert(0,"CPU.Information")
@@ -933,6 +933,21 @@ Function Get-NetInfo {
             12 { $constat = "Credentials required" }
             Default { $constat = "Unknown" }
         }
+        
+        if ($_.DHCPEnabled) {
+            try {
+               [datetime] $DHCPLeaseExpires = [System.Management.ManagementDateTimeConverter]::ToDateTime($_.DHCPLeaseExpires)
+            }
+            catch { [datetime] $DHCPLeaseExpires = [datetime] "01/01/1901" }
+
+            try {
+                [datetime] $DHCPLeaseObtained = [System.Management.ManagementDateTimeConverter]::ToDateTime($_.DHCPLeaseObtained)
+            }
+            catch { [datetime] $DHCPLeaseObtained = [datetime] "01/01/1901" }
+        } else {
+            [datetime] $DHCPLeaseExpires = "01/01/1901"
+            [datetime] $DHCPLeaseObtained = "01/01/1901"
+        }
 
         $InfoHash =  @{
             Computername = $_.PSComputerName
@@ -940,8 +955,8 @@ Function Get-NetInfo {
             DefaultGateway = $_.DefaultIPGateway
             DHCPServer = $_.DHCPServer
             DHCPEnabled = $_.DHCPEnabled
-            DHCPLeaseObtained = [System.Management.ManagementDateTimeConverter]::ToDateTime($_.DHCPLeaseObtained)
-            DHCPLeaseExpires = [System.Management.ManagementDateTimeConverter]::ToDateTime($_.DHCPLeaseExpires)
+            DHCPLeaseObtained = $DHCPLeaseObtained
+            DHCPLeaseExpires = $DHCPLeaseExpires
             DNSServer = $_.DNSServerSearchOrder
             DNSDomain = $_.DNSDomain
             IPAddress = $_.IpAddress
