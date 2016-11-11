@@ -660,9 +660,14 @@ function Get-DomainControllers {
  
     #> 
     [system.directoryservices.activedirectory.domain]::GetCurrentDomain().DomainControllers | ForEach-Object {
-        $OSmod = $_.OSVersion
-        $OSmod = $OSmod.Replace("Windows", "")
-        $OSmod = $OSmod.Replace("Server", "")
+        $OSmod = [string] $_.OSVersion
+        try {
+                if ($OSmod.Length -gt 0) {
+                        $OSmod = $OSmod.Replace("Windows", "")
+                        $OSmod = $OSmod.Replace("Server", "")
+                }
+        }
+        catch { }
 
         $InfoHash = @{
             Name = $_.Name.ToString().Split(".")[0]
