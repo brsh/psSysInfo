@@ -1046,11 +1046,10 @@ function Get-LoggedOnUsers {
     $processinfo = @(Get-WmiObject -class win32_process -ComputerName $hostname -EA "Stop") 
                 if ($processinfo) 
                 {     
-                    $processinfo | Foreach-Object {$_.GetOwner().User} |  
-                    Where-Object {$_ -ne "NETWORK SERVICE" -and $_ -ne "LOCAL SERVICE" -and $_ -ne "SYSTEM"} | 
-                    Sort-Object -Unique | 
-                    ForEach-Object { New-Object psobject -Property @{LoggedOn=$_} } |  
-                    Select-Object LoggedOn
+                    $processinfo | ForEach-Object { $_.GetOwner() } | 
+                        Where-Object { $_.User -ne $null -and $_.Domain -ne 'Window Manager' -and $_.Domain -ne 'NT AUTHORITY' } | 
+                        Sort-Object User -Unique | 
+                        Select-Object Domain,User,@{Label='AccountName'; expression={ "$($_.Domain)\$($_.User)"}}
                 }
 }
 
