@@ -655,9 +655,13 @@ function Get-DomainControllers {
             Roles
             Partitions
             Forest Name
+            IsGC
              
     .EXAMPLE 
         PS C:\> Get-DomainControllers 
+        
+    .EXAMPLE 
+        PS C:\> Get-DomainControllers | format-list *   
          
     .INPUTS 
         None
@@ -682,6 +686,11 @@ function Get-DomainControllers {
         }
         catch { $CurrentTime = [datetime] "1/1/1901" }
 
+        try {
+            [String] $IsGC = "No"
+            if (($_).IsGlobalCatalog()) { $IsGC = "Yes" }
+        } catch { $IsGC = "Unknown" }
+        
         $InfoHash = @{
             Name = $_.Name.ToString().Split(".")[0]
             Domain = $_.Domain
@@ -693,6 +702,7 @@ function Get-DomainControllers {
             Roles = $_.Roles
             Partitions = $_.Partitions
             Forest = $_.Forest
+            IsGC = $IsGC
         }
         $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
 
