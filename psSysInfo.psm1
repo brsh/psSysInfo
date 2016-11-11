@@ -644,13 +644,17 @@ function Get-DomainControllers {
         List domain controllers
  
     .DESCRIPTION
-        This function uses polls the domain for the following info on AD Domain Controllers: 
+        This function polls the domain for the following info on AD Domain Controllers: 
             Name
             Domain
             FQDN
             IPAddress
             OS
             Site
+            Current Time (with variance due to script run time)
+            Roles
+            Partitions
+            Forest Name
              
     .EXAMPLE 
         PS C:\> Get-DomainControllers 
@@ -669,6 +673,15 @@ function Get-DomainControllers {
         }
         catch { }
 
+        try {
+            if ($_.CurrentTime -eq $null) {
+                $CurrentTime = [datetime] "1/1/1901" 
+            } else {
+                $CurrentTime = [datetime] $_.CurrentTime
+            }
+        }
+        catch { $CurrentTime = [datetime] "1/1/1901" }
+
         $InfoHash = @{
             Name = $_.Name.ToString().Split(".")[0]
             Domain = $_.Domain
@@ -676,6 +689,10 @@ function Get-DomainControllers {
             IPAddress = $_.IPAddress
             OS = $OSmod.Trim()
             Site = $_.SiteName
+            CurrentTime = $CurrentTime
+            Roles = $_.Roles
+            Partitions = $_.Partitions
+            Forest = $_.Forest
         }
         $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
 
