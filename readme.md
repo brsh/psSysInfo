@@ -1,4 +1,8 @@
-psSysInfo
+#psSysInfo
+## Deprecated!!
+See https://github.com/brsh/brshSysInfo for the new edition
+
+-----
 
 A PowerShell system info module, which includes the following:
 
